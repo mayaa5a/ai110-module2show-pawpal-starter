@@ -4,13 +4,62 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+The system is built around four classes: `Task`, `Pet`, `Owner`, and `Scheduler`.
+
+- **Task** — A single care activity. Holds `description`, `time` (HH:MM), `duration` (minutes), `frequency` (e.g. "daily"), and `completed` status. Provides `mark_complete()` and `reset()` so status can be toggled.
+- **Pet** — A pet profile. Holds `name`, `species`, and a list of `Task` objects. Provides `add_task()`, `remove_task()`, and `get_tasks()`.
+- **Owner** — The account holder. Holds `name` and a list of `Pet` objects. Provides `add_pet()`, `get_pets()`, and `get_all_tasks()` (a flat list of every task across all pets).
+- **Scheduler** — The "brain." Receives an `Owner` and exposes `get_schedule()` (all tasks sorted by time), `get_pending_tasks()`, `mark_task_complete()`, and `print_schedule()` (formatted terminal output).
+
+**UML class diagram (Mermaid.js):**
+
+```mermaid
+classDiagram
+    class Task {
+        +str description
+        +str time
+        +int duration
+        +str frequency
+        +bool completed
+        +mark_complete()
+        +reset()
+        +__str__() str
+    }
+
+    class Pet {
+        +str name
+        +str species
+        +List~Task~ tasks
+        +add_task(task: Task)
+        +remove_task(description: str) bool
+        +get_tasks() List~Task~
+    }
+
+    class Owner {
+        +str name
+        +List~Pet~ pets
+        +add_pet(pet: Pet)
+        +get_pets() List~Pet~
+        +get_all_tasks() List~tuple~
+    }
+
+    class Scheduler {
+        +Owner owner
+        +get_schedule() List~tuple~
+        +get_tasks_by_time(time: str) List~tuple~
+        +get_pending_tasks() List~tuple~
+        +mark_task_complete(pet_name: str, description: str) bool
+        +print_schedule()
+    }
+
+    Pet "1" *-- "many" Task : contains
+    Owner "1" *-- "many" Pet : owns
+    Scheduler --> Owner : uses
+```
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+`Task` and `Pet` were implemented as Python dataclasses (using `@dataclass`) to eliminate boilerplate `__init__` code and keep attribute declarations self-documenting. `Owner` and `Scheduler` remained plain classes because they require richer constructor logic (`Owner` builds an empty list, `Scheduler` takes an `Owner` dependency). No structural changes were needed after the initial UML — the four-class boundary held up cleanly through implementation.
 
 ---
 
