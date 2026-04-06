@@ -22,17 +22,82 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+---
+
+## Features
+
+### Core scheduling
+- **Chronological sorting** — Tasks are always displayed in `HH:MM` time order using Python's `sorted()` with a lambda key, regardless of the order they were added.
+- **Task completion tracking** — Mark individual tasks done; a progress bar shows how many of the day's tasks are finished.
+
+### Smart algorithms
+- **Recurring tasks** — Daily tasks automatically generate a next-occurrence copy (due tomorrow) when marked complete; weekly tasks generate a copy due in 7 days. One-off (`once`) tasks do not recur. Uses Python's `datetime.timedelta` for accurate date calculation.
+- **Conflict detection** — The Scheduler checks every pair of scheduled tasks for **interval overlap** (`start_A < end_B and start_B < end_A`). Conflicting tasks are surfaced as `⚠️ st.warning` banners in the UI so the owner can reschedule before the day starts.
+
+### Filtering
+- **Filter by pet** — View tasks for a single pet or across all pets.
+- **Filter by status** — Show only pending, only completed, or all tasks.
+
+### UI
+- **Streamlit session state** — The `Owner` object (and all its pets/tasks) lives in `st.session_state`, so data persists across button clicks and re-runs without being reset.
+- **Conflict warnings** — Displayed prominently at the top of the schedule tab with full details (pet name, task name, time, duration).
+- **Per-pet task tables** — Expandable sections in the Add Tasks tab show each pet's current tasks sorted by time.
+
+---
+
+## Project structure
+
+```
+├── app.py               # Streamlit UI (connects to logic layer)
+├── pawpal_system.py     # Logic layer: Task, Pet, Owner, Scheduler
+├── main.py              # Terminal demo / smoke test
+├── tests/
+│   └── test_pawpal.py  # pytest suite (16 tests)
+├── requirements.txt
+└── reflection.md        # Design & AI-collaboration reflection
+```
+
+---
+
 ## Getting started
 
 ### Setup
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Suggested workflow
+### Run the app
+
+```bash
+streamlit run app.py
+```
+
+### Run the terminal demo
+
+```bash
+python3 main.py
+```
+
+### Run tests
+
+```bash
+python3 -m pytest
+```
+
+---
+
+## 📸 Demo
+
+<a href="/course_images/ai110/pawpal_screenshot.png" target="_blank">
+  <img src='/course_images/ai110/pawpal_screenshot.png' title='PawPal App' width='' alt='PawPal App' class='center-block' />
+</a>
+
+---
+
+## Suggested workflow
 
 1. Read the scenario carefully and identify requirements and edge cases.
 2. Draft a UML diagram (classes, attributes, methods, relationships).
